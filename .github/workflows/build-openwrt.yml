@@ -98,7 +98,7 @@ jobs:
       run: |
         cd openwrt/package/firmware/wireless-regdb/patches
         curl -fsSL https://github.com/1715173329/imoutowrt/raw/master-ax3000-5.15/package/firmware/wireless-regdb/patches/600-custom-change-txpower-and-dfs.patch > 600-custom-change-txpower-and-dfs.patch
-        cd ../../kernel/mac80211/patches/ath11k/
+        cd $GITHUB_WORKSPACE/openwrt/package/kernel/mac80211/patches/ath11k/
         curl -fsSL https://github.com/1715173329/imoutowrt/raw/master-ax3000-5.15/package/kernel/mac80211/patches/ath11k/983-ath11k-Enable-VHT-for-2G.patch > 983-ath11k-Enable-VHT-for-2G.patch
 
     - name: Update & install feeds
