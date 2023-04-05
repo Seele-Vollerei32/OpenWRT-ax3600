@@ -67,6 +67,18 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+      
+    - name: Load cached files
+      id: cache-files
+      uses: actions/cache/restore@v3
+      with: 
+        path: |
+          openwrt/dl/
+          openwrt/staging_dir/host/
+          openwrt/staging_dir/hostpkg/
+          openwrt/staging_dir/toolchain-aarch64_cortex-a53_gcc-12.2.0_musl
+        key: ${{ runner.os }}-files
+
 
     - name: Load custom feeds
       run: |
@@ -118,6 +130,7 @@ jobs:
 
     - name: Download package
       id: package
+      if: steps.cache-files.outputs.cache-hit != 'true'
       run: |
         cd openwrt
         make defconfig
@@ -155,6 +168,17 @@ jobs:
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "::set-output name=status::success"
+
+    - name: Save files
+      id: cache-files-save
+      uses: actions/cache/save@v3
+      with:
+        path: |
+          openwrt/dl/
+          openwrt/staging_dir/host/
+          openwrt/staging_dir/hostpkg/
+          openwrt/staging_dir/toolchain-aarch64_cortex-a53_gcc-12.2.0_musl
+        key: ${{ steps.cache-files.outputs.cache-primary-key }}
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@main
